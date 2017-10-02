@@ -1,0 +1,23 @@
+{
+  "name": "jsdoc-dynamic",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/devsnek/jsdoc-dynamic.git"
+  },
+  "author": "snek <me@gus.host>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/devsnek/jsdoc-dynamic/issues"
+  },
+  "homepage": "https://github.com/devsnek/jsdoc-dynamic#readme",
+  "dependencies": {
+    "jsdoc": "^3.5.5",
+    "jsdoc-api": "^4.0.0"
+  }
+}
