@@ -29,7 +29,7 @@ exports.defineTags = (dictionary) => {
         parsed.meta.filename = doclet.meta.filename;
         parsed.meta.lineno = doclet.meta.lineno;
         parsed.meta.columnno = doclet.meta.columno;
-        logger.warn(`jsdoc-api slowness update: ${item} handled`);
+        // logger.warn(`jsdoc-api slowness update: ${item} handled`);
         addons.push(parsed);
       }
     },
