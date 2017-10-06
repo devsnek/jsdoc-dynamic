@@ -4,6 +4,8 @@ const { Doclet } = require('jsdoc/doclet');
 const Transforms = {
   lowerCase: (s) => s.toLowerCase(),
   upperCase: (s) => s.toUpperCase(),
+  key: ([key]) => key,
+  value: ([, value]) => value,
 };
 
 const ThisRe = new RegExp(`\\(\\(THIS\\)(${Object.keys(Transforms).join('|')})?\\)`, 'g');
@@ -16,16 +18,20 @@ exports.defineTags = (dictionary) => {
     onTagged(doclet, tag) {
       doclet.comment = doclet.comment.replace(DynamicRe, '');
       const ex = require(path.join(doclet.meta.path, doclet.meta.filename));
-      const iterator = ex[tag.value.replace('this.', '')];
+      tag.value = tag.value.split('\n')[0];
+      const inline = tag.value.includes('INLINE');
+      if (inline) tag.value = tag.value.slice(0, -7);
+      const target = ex[tag.value.replace('this.', '')];
+      const iterator = Array.isArray(target) ? target : Object.entries(target);
       for (const item of iterator) {
         let match;
-        let comment = String(doclet.comment);
+        let comment = inline ? doclet.comment : String(doclet.comment);
         while ((match = ThisRe.exec(comment)) !== null) {
           const modifier = match[1];
           const t = modifier ? Transforms[modifier](item) : item;
           comment = comment.replace(ThisRe, t);
         }
-        addons.push(new Doclet(comment, doclet.meta));
+        if (!inline) addons.push(new Doclet(comment, doclet.meta));
       }
     },
     mustHaveValue: true,
@@ -40,6 +46,9 @@ exports.handlers = {
       if (d.undocumented || !d.name) continue;
       if (ThisRe.test(d.name)) doclets.splice(i, 1);
     }
-    doclets.push(...addons);
+    for (const item of addons) {
+      if (doclets.find((d) => d.longname === item.longname)) return;
+      doclets.push(item);
+    }
   },
 };
