@@ -19,19 +19,17 @@ exports.defineTags = (dictionary) => {
       doclet.comment = doclet.comment.replace(DynamicRe, '');
       const ex = require(path.join(doclet.meta.path, doclet.meta.filename));
       tag.value = tag.value.split('\n')[0];
-      const inline = tag.value.includes('INLINE');
-      if (inline) tag.value = tag.value.slice(0, -7);
       const target = ex[tag.value.replace('this.', '')];
       const iterator = Array.isArray(target) ? target : Object.entries(target);
       for (const item of iterator) {
         let match;
-        let comment = inline ? doclet.comment : String(doclet.comment);
+        let comment = String(doclet.comment);
         while ((match = ThisRe.exec(comment)) !== null) {
           const modifier = match[1];
           const t = modifier ? Transforms[modifier](item) : item;
-          comment = comment.replace(ThisRe, t);
+          comment = comment.replace(match[0], t);
         }
-        if (!inline) addons.push(new Doclet(comment, doclet.meta));
+        addons.push(new Doclet(comment, doclet.meta));
       }
     },
     mustHaveValue: true,
